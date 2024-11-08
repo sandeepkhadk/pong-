@@ -292,7 +292,6 @@ int main() {
 
             EndDrawing();
         }
-        // Add the rest of the states (playing, paused, won, etc.) as per your original code...
         if (state == select_level) {
             BeginDrawing();
             ClearBackground(Background_Color);
@@ -396,12 +395,6 @@ if (state == playing) {
         ball.speed_x *= -1;
         PlaySound(ballhit);
     }
-
-    
-
-            // DrawText(TextFormat("%s: %i", player1_name, player_score), screen_width / 2 - 300, 20, 40, Paddle_Color);
-            // DrawText(TextFormat("%s: %i", player2_name, cpu_score), screen_width / 2 + 20, 20, 40, Paddle_Color);
-
             EndDrawing();
         }
 
