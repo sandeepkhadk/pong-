@@ -104,16 +104,18 @@ public:
             winner = 2;
         }
     }
-
     void ResetBall() {
-        x = GetScreenWidth() / 2;
-        y = GetScreenHeight() / 2;
+    x = GetScreenWidth() / 2;
+    y = GetScreenHeight() / 2;
 
-        int speed_choices[2] = { -1, 1 };
-        int speed_factor = (currentDifficulty == easy) ? 8 : (currentDifficulty == medium) ? 12 : 16;
-        speed_x = speed_factor * speed_choices[GetRandomValue(0, 1)];
-        speed_y = speed_factor * speed_choices[GetRandomValue(0, 1)];
-    }
+    // Randomize initial direction
+    int speed_choices[2] = { -1, 1 };
+    int speed_factor = (currentDifficulty == easy) ? 8 : (currentDifficulty == medium) ? 12 : 16;
+    speed_x = speed_factor * speed_choices[GetRandomValue(0, 1)];
+    speed_y = speed_factor * speed_choices[GetRandomValue(0, 1)];
+}
+
+    
 };
 
 // Paddle class
@@ -162,13 +164,13 @@ public:
 Ball ball;
 Paddle player;
 Paddle cpu;
-//Update CPU logic
+
+// Update CPU logic
 void UpdateCPU() {
     int speed_factor = (currentDifficulty == easy) ? 8 : (currentDifficulty == medium) ? 12 : 16;
     if (ball.y < cpu.y + cpu.height / 2) {
         cpu.y -= speed_factor;
-    }
-    else if (ball.y > cpu.y + cpu.height / 2) {
+    } else if (ball.y > cpu.y + cpu.height / 2) {
         cpu.y += speed_factor;
     }
 
@@ -292,6 +294,7 @@ int main() {
 
             EndDrawing();
         }
+        // Add the rest of the states (playing, paused, won, etc.) as per your original code...
         if (state == select_level) {
             BeginDrawing();
             ClearBackground(Background_Color);
@@ -361,7 +364,7 @@ if (state == playing) {
     if (IsKeyPressed(KEY_R)) {
         state = paused;
     }
-    if (IsKeyPressed(KEY_S)) {
+    if (IsKeyPressed(KEY_A)) {
         player_score = 0;
         cpu_score = 0;
         ball.ResetBall();
@@ -379,22 +382,27 @@ if (state == playing) {
         cpu.Update(2);     // Player 2 controlled by 'W' and 'S' keys
     } else {
         player.Update(1);  // Player controlled by arrow keys
-        UpdateCPU();      // CPU controls the other paddle
+        UpdateCPU();       // CPU controls the other paddle
     }
 
     // Ball update
     ball.Update();
 
     // Collision handling for paddles and ball
-    if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ player.x, player.y, player.width, player.height })) {
-        ball.speed_x *= -1;
-        PlaySound(ballhit);
-    }
+   if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ player.x, player.y, player.width, player.height }) && ball.speed_x > 0) {
+    ball.speed_x *= -1;
+    PlaySound(ballhit);
+}
 
-    if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ cpu.x, cpu.y, cpu.width, cpu.height })) {
-        ball.speed_x *= -1;
-        PlaySound(ballhit);
-    }
+if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ cpu.x, cpu.y, cpu.width, cpu.height }) && ball.speed_x < 0) {
+    ball.speed_x *= -1;
+    PlaySound(ballhit);
+}
+
+
+    
+
+            
             EndDrawing();
         }
 
@@ -404,12 +412,12 @@ if (state == playing) {
 
             DrawText("Game Paused", screen_width / 2 - MeasureText("Game Paused", 40) / 2, screen_height / 2 - 50, 40, Paddle_Color);
             DrawText("Press R to Resume", screen_width / 2 - MeasureText("Press R to Resume", 20) / 2, screen_height / 2, 20, Paddle_Color);
-            DrawText("Press S to Restart", screen_width / 2 - MeasureText("Press S to Restart", 20) / 2, screen_height / 2 + 50, 20, Paddle_Color);
+            DrawText("Press A to Restart", screen_width / 2 - MeasureText("Press A to Restart", 20) / 2, screen_height / 2 + 50, 20, Paddle_Color);
 
             if (IsKeyPressed(KEY_R)) {
                 state = playing;
             }
-            if (IsKeyPressed(KEY_S)) {
+            if (IsKeyPressed(KEY_A)) {
                 player_score = 0;
                 cpu_score = 0;
                 ball.ResetBall();
@@ -430,9 +438,9 @@ if (state == playing) {
                 DrawText(player1_won, screen_width / 2 - MeasureText(player1_won, 40) / 2, screen_height / 2 - 50, 40, Paddle_Color);
             }
 
-            DrawText("Press S to Restart", screen_width / 2 - MeasureText("Press S to Restart", 20) / 2, screen_height / 2 + 50, 20, Paddle_Color);
+            DrawText("Press A to Restart", screen_width / 2 - MeasureText("Press A to Restart", 20) / 2, screen_height / 2 + 50, 20, Paddle_Color);
 
-            if (IsKeyPressed(KEY_S)) {
+            if (IsKeyPressed(KEY_A)) {
                 player_score = 0;
                 cpu_score = 0;
                 ball.ResetBall();
@@ -446,5 +454,4 @@ if (state == playing) {
     CloseWindow();
     return 0;
 }
-
 
