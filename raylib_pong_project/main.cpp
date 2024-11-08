@@ -1,5 +1,5 @@
 #include <iostream>
-#include<string.h>
+#include <string.h>
 #include <raylib.h>
 using namespace std;
 
@@ -162,8 +162,7 @@ public:
 Ball ball;
 Paddle player;
 Paddle cpu;
-
-// Update CPU logic
+//Update CPU logic
 void UpdateCPU() {
     int speed_factor = (currentDifficulty == easy) ? 8 : (currentDifficulty == medium) ? 12 : 16;
     if (ball.y < cpu.y + cpu.height / 2) {
@@ -175,14 +174,11 @@ void UpdateCPU() {
 
     cpu.LimitMovement();
 }
-
 int main() {
     cout << "Starting the game" << endl;
     InitWindow(screen_width, screen_height, "My Pong Game!");
     InitAudioDevice();
 
-    //Rectangle buttonSinglePlayer = { screen_width / 2 - 100, screen_height / 2 - 125, 200, 50 };
-    //Rectangle buttonMultiplayer = { screen_width / 2 - 100, screen_height / 2 - 50, 200, 50 };
     Rectangle buttonPlayerVsPlayer = { screen_width / 2 - 100, screen_height / 2 - 50, 200, 50 };
     Rectangle buttonPlayerVsCpu = { screen_width / 2 - 100, screen_height / 2 + 25, 200, 50 };
     Rectangle buttonEasy = { screen_width / 2 - 100, screen_height / 2 - 50, 200, 50 };
@@ -246,46 +242,57 @@ int main() {
 
             EndDrawing();
         }
-    if (state == input_name) {
-    BeginDrawing();
-    ClearBackground(Background_Color);
+        if (state == input_name) {
+            BeginDrawing();
+            ClearBackground(Background_Color);
 
-    DrawText("Enter Player Name", screen_width / 2 - MeasureText("Enter Player Name", 40) / 2, 100, 40, Paddle_Color);
+            DrawText("Enter Player Names", screen_width / 2 - MeasureText("Enter Player Names", 40) / 2, 100, 40, Paddle_Color);
 
-    // Show name input for Player 1 only in single-player mode
-    if (enterName1) {
-        DrawText("Enter Player Name: ", screen_width / 2 - 300, screen_height / 2 - 50, 20, Paddle_Color);
-        DrawText(player1_name, screen_width / 2 - 50, screen_height / 2 - 50, 20, Paddle_Color);
-    }
+            if (enterName1) {
+                DrawText("Player 1 Name: ", screen_width / 2 - 300, screen_height / 2 - 50, 20, Paddle_Color);
+                DrawText(player1_name, screen_width / 2 - 50, screen_height / 2 - 50, 20, Paddle_Color);
+            } else if (enterName2) {
+                DrawText("Player 2 Name: ", screen_width / 2 - 300, screen_height / 2, 20, Paddle_Color);
+                DrawText(player2_name, screen_width / 2 - 50, screen_height / 2, 20, Paddle_Color);
+            }
 
-    if (IsKeyPressed(KEY_BACKSPACE) && letterCount1 > 0) {
-        letterCount1--;
-        player1_name[letterCount1] = '\0';
-    }
+            if (IsKeyPressed(KEY_BACKSPACE)) {
+                if (enterName1 && letterCount1 > 0) {
+                    letterCount1--;
+                    player1_name[letterCount1] = '\0';
+                } else if (enterName2 && letterCount2 > 0) {
+                    letterCount2--;
+                    player2_name[letterCount2] = '\0';
+                }
+            }
 
-    int key = GetKeyPressed();
-    if (key >= 32 && key <= 125 && letterCount1 < 19) {
-        player1_name[letterCount1] = (char)key;
-        player1_name[++letterCount1] = '\0';
-    }
+            int key = GetKeyPressed();
+            if (key >= 32 && key <= 125) {
+                if (enterName1 && letterCount1 < 19) {
+                    player1_name[letterCount1] = (char)key;
+                    player1_name[++letterCount1] = '\0';
+                } else if (enterName2 && letterCount2 < 19) {
+                    player2_name[letterCount2] = (char)key;
+                    player2_name[++letterCount2] = '\0';
+                }
+            }
 
-    if (IsKeyPressed(KEY_ENTER)) {
-        enterName1 = false;
+            if (IsKeyPressed(KEY_ENTER)) {
+                if (enterName1) {
+                    enterName1 = false;
+                    if (currentMode == player_vs_player) {
+                        enterName2 = true;
+                    } else {
+                        state = select_level;
+                    }
+                } else if (enterName2) {
+                    state = select_level;
+                }
+            }
 
-        if (currentMode == single_player) {
-            // In single-player mode, set Player 2's name as "CPU" and move to level selection
-            strcpy(player2_name, "CPU");
-            state = select_level;
-        } else {
-            // In multiplayer mode, proceed to Player 2's name input
-            enterName2 = true;
+            EndDrawing();
         }
-    }
-
-    EndDrawing();
-}
-
-
+        // Add the rest of the states (playing, paused, won, etc.) as per your original code...
         if (state == select_level) {
             BeginDrawing();
             ClearBackground(Background_Color);
@@ -343,6 +350,12 @@ if (state == playing) {
 
     // Adjust spacing for names and scores
     DrawText(TextFormat("%-10s: %i", player1_name, player_score), screen_width / 2 - 250, 20, 40, Paddle_Color);
+
+    // Ensure CPU name is displayed in single-player mode
+    if (currentMode == single_player) {
+        strcpy(player2_name, "CPU");
+    }
+
     DrawText(TextFormat("%-10s: %i", player2_name, cpu_score), screen_width / 2 + 50, 20, 40, Paddle_Color);
 
     // Game pause and restart controls
@@ -367,7 +380,7 @@ if (state == playing) {
         cpu.Update(2);     // Player 2 controlled by 'W' and 'S' keys
     } else {
         player.Update(1);  // Player controlled by arrow keys
-        UpdateCPU();       // CPU controls the other paddle
+        UpdateCPU();      // CPU controls the other paddle
     }
 
     // Ball update
@@ -382,8 +395,7 @@ if (state == playing) {
     if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ cpu.x, cpu.y, cpu.width, cpu.height })) {
         ball.speed_x *= -1;
         PlaySound(ballhit);
-    
-}
+    }
 
     
 
@@ -441,3 +453,5 @@ if (state == playing) {
     CloseWindow();
     return 0;
 }
+
+
