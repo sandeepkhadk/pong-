@@ -232,10 +232,21 @@ void SpawnParticles(Vector2 position, int count,Color) {
         particles.push_back({position, {GetRandomValue(-100, 100) / 10.0f, GetRandomValue(-100, 100) / 10.0f}, 1.0f,RED});
     }
 }
-
+void UpdatedMenu(){
+    player_score = 0;
+    cpu_score=0;
+    // Reset name input variables
+    letterCount1 = 0;
+    letterCount2 = 0;
+    enterName1 = true;  // To re-enable player name input
+    enterName2 = false;
+    player1_name[0] = '\0';
+    player2_name[0] = '\0';
+}      
 
 
 int main() {
+
     cout << "READY TO PLAY" << endl;
     InitWindow(screen_width, screen_height, "PROJECT Ping-Pong");
     InitAudioDevice();
@@ -487,6 +498,7 @@ if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ c
                 state = playing;
             }
             if (IsKeyPressed(KEY_M)) {
+                UpdatedMenu();
                 state = menu;
             }
             DrawParticles();
@@ -499,11 +511,11 @@ if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ c
             {
                 if (winner ==1) {
                 DrawText(player1_name, screen_width / 2 - MeasureText(player1_name, 30) / 2-50, screen_height / 2 - 50, 40, Paddle_Color);
-                DrawText("WON", screen_width / 2 - MeasureText(player1_won, 30) / 2+strlen(player1_name)*26+140/strlen(player1_name), screen_height / 2 - 50, 40, Paddle_Color);
+                DrawText("WON", screen_width / 2 - MeasureText(player1_won, 30) / 2+strlen(player1_name)*28+140/strlen(player1_name), screen_height / 2 - 50, 40, Paddle_Color);
                 }  
                 else if (winner == 2) {
                         DrawText(player2_name, screen_width / 2 - MeasureText(player2_name, 30) / 2-50, screen_height / 2 - 50, 40, Paddle_Color);
-                        DrawText("WON", screen_width / 2 - MeasureText(player2_won, 30) / 2+strlen(player2_name)*26+140/strlen(player2_name), screen_height / 2 - 50, 40, Paddle_Color);
+                        DrawText("WON", screen_width / 2 - MeasureText(player2_won, 30) / 2+strlen(player2_name)*28+140/strlen(player2_name), screen_height / 2 - 50, 40, Paddle_Color);
                 }  
             }
             else{
@@ -530,6 +542,7 @@ if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ c
              DrawText("Press M to Menu", screen_width / 2 - MeasureText("Press A to Restart", 20) / 2+25, screen_height / 2 + 100, 20, Paddle_Color);
 
             if (IsKeyPressed(KEY_M)) {
+                UpdatedMenu();
                 state = menu;
             }
             DrawParticles();
